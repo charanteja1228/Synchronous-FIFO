@@ -1,0 +1,22 @@
+
+ writing data 
+
+time=25 input data=0
+time=45 input data=2
+time=65 input data=4
+time=85 input data=6
+time=105 input data=8
+time=125 input data=10
+time=145 input data=12
+time=165 input data=14
+
+ reading data 
+
+time=205 output data=0
+time=225 output data=2
+time=245 output data=4
+time=265 output data=6
+time=285 output data=8
+time=305 output data=10
+time=325 output data=12
+time=345 output data=14
