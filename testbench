@@ -1,0 +1,82 @@
+module tb_sync_fifo;
+  parameter data_width=8;
+  parameter fifo_depth=8;
+  
+  reg clk,reset;
+  reg wr_en,re_en;
+  reg [data_width-1:0]data_in;
+  wire [data_width-1:0]data_out;
+  wire full;
+  wire empty;
+  
+  integer i;
+  
+  synchronous_fifo dut(
+    .clk(clk),
+    .reset(reset),
+    .wr_en(wr_en),
+    .re_en(re_en),
+    .data_in(data_in),
+    .data_out(data_out),
+    .full(full),
+    .empty(empty)
+  );
+  
+  initial clk=0;
+  always #5 clk=~clk;
+  
+  task write_data(input [data_width-1:0]d_in );
+    begin
+      @(posedge clk) begin
+        wr_en=1;
+        data_in = d_in;
+        $display("time=%g input data=%0d",$time,data_in);
+      end
+
+      @(posedge clk) begin
+        wr_en=0;
+      end
+    end
+  endtask
+  
+  task read_data();
+    begin
+      @(posedge clk)
+      re_en=1;
+      @(posedge clk)
+      re_en=0;   
+      $display("time=%g output data=%0d",$time,data_out);
+    end
+  endtask
+  
+  initial begin
+    
+    $dumpfile("dump.vcd");
+    $dumpvars(0,tb_sync_fifo);
+    
+    reset=1;
+    wr_en=0;
+    re_en=0;
+    
+    #10 reset=0;
+    
+    $display("\n writing data \n");
+    
+    @(posedge clk) begin     
+      for(i=0;i<fifo_depth;i++) begin
+        if(!full) write_data(2*i);
+      end
+    end
+    
+    $display("\n reading data \n");
+      
+    @(posedge clk) begin
+      for(i=0;i<fifo_depth;i++) begin
+        if(!empty) read_data();
+      end
+    end
+    
+    #10 $finish;
+      
+  end
+endmodule
